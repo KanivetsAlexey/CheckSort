@@ -2,17 +2,19 @@ package CheckSort.fillers;
 
 import CheckSort.analyzer.Filler;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
 /**
- * Created by Alexey on 22.10.2017
+ * Created by Kanivets on 22.10.2017
  */
 public class FillerGenerator {
 
     @Filler
-    public static Integer[] generateSortedFiller(int size){
+    public static Integer[] generateSortedFiller(Integer size){
+        size = chackerOfSize(size);
         Integer[] fill = new Integer[size];
         Random random = new Random();
         for(int i = 0; i < size; i++){
@@ -23,7 +25,8 @@ public class FillerGenerator {
     }
 
     @Filler
-    public static Integer[] generateSortedWithRElemFiller(int size){
+    public static Integer[] generateSortedWithRElemFiller(Integer size){
+        size = chackerOfSize(size);
         Integer[] fill = new Integer[size];
         Random random = new Random();
         for(int i = 0; i < size; i++){
@@ -35,7 +38,8 @@ public class FillerGenerator {
     }
 
     @Filler
-    public static Integer[] generateRevSortedFiller(int size){
+    public static Integer[] generateRevSortedFiller(Integer size){
+        size = chackerOfSize(size);
         Integer[] fill = new Integer[size];
         Random random = new Random();
         for(int i = 0; i < size; i++){
@@ -46,12 +50,22 @@ public class FillerGenerator {
     }
 
     @Filler
-    public static Integer[] generateRandomFiller(int size){
+    public static Integer[] generateRandomFiller(Integer size){
+        size = chackerOfSize(size);
         Integer[] fill = new Integer[size];
         Random random = new Random();
         for(int i = 0; i < size; i++){
             fill[i] = random.nextInt(size-1);
         }
         return fill;
+    }
+
+    private static int chackerOfSize(Integer size){
+        if(size == null){
+            return Integer.parseInt(JOptionPane.showInputDialog("Insert valid size(not null, >0)", size));
+        }else if(size < 0){
+            return Math.abs(size);
+        }
+        return size;
     }
 }

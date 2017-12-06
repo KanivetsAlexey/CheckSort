@@ -1,21 +1,14 @@
 package CheckSort;
 
-import CheckSort.excel.LineChart;
-
-import java.io.IOException;
+import CheckSort.analyzer.GenerateAnalyz;
 
 /**
- * Hello world!
- *
+ * Created by Kanivets
  */
 public class Main
 {
     public static void main( String[] args ){
-        LineChart lineChart = new LineChart();
-        try {
-            lineChart.startAnalyzis();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        GenerateAnalyz generateAnalyz = new GenerateAnalyz();
+        generateAnalyz.startAnalyzis();
     }
 }

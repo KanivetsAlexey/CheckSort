@@ -1,27 +1,24 @@
 package CheckSort.sorters;
 
 /**
- * Created by Alexey on 11.10.2017
+ * Created by Kanivets on 11.10.2017
  */
 public class MargeSort extends Sort {
 
     private Integer[] listOfElements;
 
     @Override
-    public long sortList(Integer[] listOfElements) {
-        this.listOfElements = listOfElements;
-        long start = System.nanoTime();
-        mergeSort(0, listOfElements.length);
-        long end = System.nanoTime();
-        return (end-start);
-    }
-
-    public Integer[] sortListForTest(Integer[] listOfElements) {
+    public Integer[] sortList(Integer[] listOfElements) {
         this.listOfElements = listOfElements;
         mergeSort(0, listOfElements.length);
         return listOfElements;
     }
 
+    /**
+     *
+     * @param low left side of list for sort
+     * @param high right side of list for sort
+     */
     private void mergeSort(int low, int high) {
         if (low + 1 < high) {
             int mid = (low + high) >>> 1;

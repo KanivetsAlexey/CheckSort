@@ -12,46 +12,39 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
- * Created by Alexey on 23.10.2017
+ * Created by Kanivets on 23.10.2017
  */
 public class LineChart {
     private Integer counter = 0;
 
-    public ArrayList<Long> startAnalyzis() throws IOException {
-        GenerateAnalyz generateAnalyz = new GenerateAnalyz();
-        generateAnalyz.generateData();
-        ArrayList<Class> classesWithSort = generateAnalyz.getClassesWithSort();
-        ArrayList<Method> annotatedMethods = generateAnalyz.getAnnotatedMethods();
-        Class classWithAnnotMethods = generateAnalyz.getClassWithAnnotMethods();
-        ArrayList<Long> listNanoTime = generateAnalyz.getListNanoTime();
+    public void startDrowing(GenerateAnalyz generateAnalyz) throws IOException {
+
         final int NUM_OF_ROWS = 7;
         final int NUM_OF_COLUMNS = generateAnalyz.getSIZE();
 
         LineChart lineChart = new LineChart();
         try (Workbook wb = new XSSFWorkbook()){
-            for(Method mth : annotatedMethods){
+            for(Method mth : generateAnalyz.getAnnotatedMethods()){
                 Sheet sheet = wb.createSheet(mth.getName().toString());
                 try{
-                    sheet = drowChart(fillSheet(sheet, classesWithSort, NUM_OF_ROWS,
-                            NUM_OF_COLUMNS, listNanoTime), NUM_OF_COLUMNS);
+                    sheet = drowChart(fillSheet(sheet, generateAnalyz.getClassesWithBoubleSort(), NUM_OF_ROWS,
+                            NUM_OF_COLUMNS, generateAnalyz.getListNanoTime()), NUM_OF_COLUMNS);
                 }catch(Exception ex){
                     ex.printStackTrace();
                 }
             }
             lineChart.writeWB(wb);
         }
-        return listNanoTime;
     }
     /**
-     *
-     * @param sheet
-     * @param classesWithSort
-     * @param NUM_OF_ROWS
-     * @param NUM_OF_COLUMNS
-     * @param timeOfSort
+     * @param sheet sheet in excel
+     * @param classesWithBoubleSort classes that extends Sort
+     * @param NUM_OF_ROWS num of rows
+     * @param NUM_OF_COLUMNS num of columns
+     * @param timeOfSort list with times of sort
      * @return
      */
-    public Sheet fillSheet(Sheet sheet, ArrayList<Class> classesWithSort, int NUM_OF_ROWS, int NUM_OF_COLUMNS, ArrayList<Long> timeOfSort){
+    public Sheet fillSheet(Sheet sheet, ArrayList<Class> classesWithBoubleSort, int NUM_OF_ROWS, int NUM_OF_COLUMNS, ArrayList<Long> timeOfSort){
         Row row;
         Cell cell;
         for (int rowIndex = 0; rowIndex < NUM_OF_ROWS; rowIndex++) {
@@ -68,7 +61,7 @@ public class LineChart {
                         break;
                     }
                     cell = row.createCell((short) colIndex);
-                    cell.setCellValue(classesWithSort.get(rowIndex-1).getName());
+                    cell.setCellValue(classesWithBoubleSort.get(rowIndex-1).getName());
                     colIndex++;
                 }
                 cell = row.createCell((short) colIndex);
@@ -80,10 +73,10 @@ public class LineChart {
     }
 
     /**
-     *
+     * {@link #fillSheet(org.apache.poi.ss.usermodel.Sheet, java.util.ArrayList, int, int, java.util.ArrayList)}
      * @see org.apache.poi.ss.usermodel.Chart
-     * @param sheet - sheet for chart
-     * @param NUM_OF_COLUMNS
+     * @param sheet sheet for chart
+     * @param NUM_OF_COLUMNS num of columns in chat
      * @return
      */
     public Sheet drowChart(Sheet sheet, int NUM_OF_COLUMNS){
@@ -131,7 +124,7 @@ public class LineChart {
      * @throws IOException
      */
     public void writeWB(Workbook wb) throws IOException{
-        try (FileOutputStream fileOut = new FileOutputStream("D:/Work/Netcracker/lab01/lab01_Kanivets/SortAnalyz.xlsx")) {
+        try (FileOutputStream fileOut = new FileOutputStream("D:/Work/Netcracker/lab01/lab01_Kanivets/SortAnalyz1.xlsx")) {
             wb.write(fileOut);
         }
     }

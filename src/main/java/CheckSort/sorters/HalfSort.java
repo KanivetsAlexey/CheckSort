@@ -1,27 +1,24 @@
 package CheckSort.sorters;
 
 /**
- * Created by Alexey on 11.10.2017
+ * Created by Kanivets on 11.10.2017
  */
 public class HalfSort extends Sort {
 
     private Integer[] listOfElements;
 
     @Override
-    public long sortList(Integer[] listOfElements) {
-        this.listOfElements = listOfElements;
-        long start = System.nanoTime();
-        halfRecSort(0, listOfElements.length-1);
-        long end = System.nanoTime();
-        return (end-start);
-    }
-
-    public Integer[] sortListForTest(Integer[] listOfElements) {
+    public Integer[] sortList(Integer[] listOfElements) {
         this.listOfElements = listOfElements;
         halfRecSort(0, listOfElements.length-1);
         return listOfElements;
     }
 
+    /**
+     * recursive func for sort
+     * @param left left side of zone for sort
+     * @param right right side of zone for sort
+     */
     private void halfRecSort(int left, int right){
         int s = listOfElements[(int) Math.floor((left + right)/2)];
         int i = left, j = right;

@@ -1,27 +1,34 @@
 package CheckSort.analyzer;
 
-import CheckSort.fillers.FillerGenerator;
-import CheckSort.sorters.*;
+import CheckSort.excel.LineChart;
+import CheckSort.sorters.BoubleSort;
+import CheckSort.sorters.BoubleSortDown;
+import CheckSort.sorters.BoubleSortUp;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 /**
- * Created by Alexey on 22.10.2017
+ * Created by Kanivets on 22.10.2017
  */
 public class GenerateAnalyz {
 
     private ArrayList<Class> classesWithSort = new ArrayList<>();
+    private ArrayList<Class> classesWithBoubleSort = new ArrayList<>();
     private ArrayList<Method> annotatedMethods = new ArrayList<>();
     private Class classWithAnnotMethods;
     private ArrayList<Long> listNanoTime = new ArrayList<>();
     private final int SIZE = 100;
 
-    public void generateData() {
-        reflectionHelper();
+    /**
+     * generates data for excel used reflection API
+     */
+    public void startAnalyzis() {
+        ReflectionFunc rf = new ReflectionFunc();
+        rf.reflectionHelper(this);
+        Timer timer = new Timer();
 
         for(Method mth : annotatedMethods){
             try{
@@ -30,91 +37,67 @@ public class GenerateAnalyz {
                         Class[] paramInt = new Class[1];
                         paramInt[0] = Integer.TYPE;
                         Object obj = classWithAnnotMethods.newInstance();
-                        Object currObj = clazz.newInstance();
-                        Method method = clazz.getDeclaredMethod("sortList", Integer[].class);
-                        listNanoTime.add(timeNormalyzer(
-                                (long)method.invoke(currObj, mth.invoke(obj, i))));
+                        timeFinder(mth, clazz, i, timer, obj);
                     }
                 }
             }catch(Exception ex){
                 ex.printStackTrace();
             }
         }
+
+        LineChart lineChart = new LineChart();
+        try {
+            lineChart.startDrowing(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private long timeNormalyzer(long time){
-        if(time >= 10000000){
+    public void timeFinder(Method mth, Class clazz, int i, Timer timer, Object obj) throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        if(clazz != BoubleSort.class){
+            timeFinderAll(mth, clazz, i, timer, obj);
+        }else{
+            timeFinderForBoubleUp(mth, clazz, i, timer, obj);
+            timeFinderForBoubleDown(mth, clazz, i, timer, obj);
+        }
+    }
+
+    public void timeFinderAll(Method mth, Class clazz, int i, Timer timer, Object obj) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        Object currObj = clazz.newInstance();
+        Method method = clazz.getDeclaredMethod("sortList", Integer[].class);
+        timer.start();
+        method.invoke(currObj, mth.invoke(obj, i));
+        listNanoTime.add(timeNormalyzing(timer.stop()));
+    }
+
+    public void timeFinderForBoubleUp(Method mth, Class clazz, int i, Timer timer, Object obj) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        Object currObj = BoubleSortUp.class.newInstance();
+        Method method = clazz.getDeclaredMethod("sortList", Integer[].class);
+        timer.start();
+        method.invoke(currObj, mth.invoke(obj, i));
+        listNanoTime.add(timeNormalyzing(timer.stop()));
+    }
+
+    public void timeFinderForBoubleDown(Method mth, Class clazz, int i, Timer timer, Object obj) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        Object currObj = BoubleSortDown.class.newInstance();
+        Method method = clazz.getDeclaredMethod("sortList", Integer[].class);
+        timer.start();
+        method.invoke(currObj, mth.invoke(obj, i));
+        listNanoTime.add(timeNormalyzing(timer.stop()));
+    }
+    /**
+     * Normalize time
+     * @param time time that must be checked for normalization
+     * @return normalized/not time
+     */
+    private long timeNormalyzing(long time){
+        if(time >= 300000){
             time = time / 10;
         }
         return time;
     }
 
-    private void getAnnotatedMethodsFromClass() {
-        Class type = FillerGenerator.class;
-        Class annotation = Filler.class;
-        Class<?> cls = type;
-        while (cls != Object.class) {
-            final List<Method> allMethods = new ArrayList<>(Arrays.asList(cls.getDeclaredMethods()));
-            for (final Method method : allMethods) {
-                if (method.isAnnotationPresent(annotation)) {
-                    classWithAnnotMethods = cls;
-                    annotatedMethods.add(method);
-                    System.out.println("\t" + method.getName());
-                }
-            }
-            cls = cls.getSuperclass();
-        }
-    }
 
-    private void getChildClasses() throws NoSuchFieldException, IllegalAccessException {
-        ClassLoader myCL = Thread.currentThread().getContextClassLoader();
-        while (myCL != null) {
-            System.out.println("ClassLoader: " + myCL);
-            Iterator iter = list(myCL);
-            while (iter.hasNext()) {
-                Class cls = (Class)iter.next();
-                if((cls.getSuperclass() != null) && cls.getSuperclass().equals(Sort.class)){
-                    classesWithSort.add(cls);
-                    System.out.println("\t" + cls.getName());
-                }
-            }
-            myCL = myCL.getParent();
-        }
-    }
-
-    private Iterator list(ClassLoader CL) throws NoSuchFieldException, IllegalAccessException {
-        Class CL_class = CL.getClass();
-        while (CL_class != java.lang.ClassLoader.class) {
-            CL_class = CL_class.getSuperclass();
-        }
-        java.lang.reflect.Field ClassLoader_classes_field = CL_class
-                .getDeclaredField("classes");
-        ClassLoader_classes_field.setAccessible(true);
-        List classes = (List) ClassLoader_classes_field.get(CL);
-        return classes.iterator();
-    }
-
-    private void objectCreator(){
-        BoubleSortDown boubleSortDown = new BoubleSortDown();
-        BoubleSortUp boubleSortUp = new BoubleSortUp();
-        HalfSort halfSort = new HalfSort();
-        MargeSort margeSort =  new MargeSort();
-        SimpleSort simpleSort = new SimpleSort();
-        SwapSort swapSort = new SwapSort();
-    }
-
-    private void reflectionHelper(){
-        objectCreator();
-        FillerGenerator fillerGenerator = new FillerGenerator();
-        getAnnotatedMethodsFromClass();
-        try {
-            getChildClasses();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
     public ArrayList<Class> getClassesWithSort() {
         return classesWithSort;
     }
@@ -135,4 +118,27 @@ public class GenerateAnalyz {
         return SIZE;
     }
 
+    public ArrayList<Class> getClassesWithBoubleSort() {
+        return classesWithBoubleSort;
+    }
+
+    public void setAnnotatedMethods(Method annotatedMethods) {
+        this.annotatedMethods.add(annotatedMethods);
+    }
+
+    public void setClassesWithSort(Class classesWithSort) {
+        this.classesWithSort.add(classesWithSort);
+    }
+
+    public void setClassWithAnnotMethods(Class classWithAnnotMethods) {
+        this.classWithAnnotMethods = classWithAnnotMethods;
+    }
+
+    public void setListNanoTime(ArrayList<Long> listNanoTime) {
+        this.listNanoTime = listNanoTime;
+    }
+
+    public void setClassesWithBoubleSort(Class classesWithBoubleSort) {
+        this.classesWithBoubleSort.add(classesWithBoubleSort);
+    }
 }

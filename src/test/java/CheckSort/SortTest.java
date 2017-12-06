@@ -15,42 +15,42 @@ public class SortTest {
     @Test
     public void boubleDownTest(){
         BoubleSortDown boubleSortDown = new BoubleSortDown();
-        Integer[] sorted = boubleSortDown.sortListForTest(elements);
+        Integer[] sorted = boubleSortDown.sortList(elements);
         Assert.assertArrayEquals(sortedElements, sorted);
     }
 
     @Test
     public void boubleUpTest(){
         BoubleSortUp boubleSortUp = new BoubleSortUp();
-        Integer[] sorted = boubleSortUp.sortListForTest(elements);
+        Integer[] sorted = boubleSortUp.sortList(elements);
         Assert.assertArrayEquals(sortedElements, sorted);
     }
 
     @Test
     public void halfSortTest(){
         HalfSort halfSort = new HalfSort();
-        Integer[] sorted = halfSort.sortListForTest(elements);
+        Integer[] sorted = halfSort.sortList(elements);
         Assert.assertArrayEquals(sortedElements, sorted);
     }
 
     @Test
     public void margeSortTest(){
         MargeSort margeSort = new MargeSort();
-        Integer[] sorted = margeSort.sortListForTest(elements);
+        Integer[] sorted = margeSort.sortList(elements);
         Assert.assertArrayEquals(sortedElements, sorted);
     }
 
     @Test
     public void simpleSortTest(){
         SimpleSort simpleSort = new SimpleSort();
-        Integer[] sorted = simpleSort.sortListForTest(elements);
+        Integer[] sorted = simpleSort.sortList(elements);
         Assert.assertArrayEquals(sortedElements, sorted);
     }
 
     @Test
     public void swapSortTest(){
         SwapSort swapSort = new SwapSort();
-        Integer[] sorted = swapSort.sortListForTest(elements);
+        Integer[] sorted = swapSort.sortList(elements);
         Assert.assertArrayEquals(sortedElements, sorted);
     }
 }

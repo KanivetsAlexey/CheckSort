@@ -1,36 +1,29 @@
 package CheckSort.sorters;
 
+import CheckSort.sorters.util.BoubleIterator;
+
 /**
- * Created by Alexey on 11.10.2017
+ * Created by Kanivets on 11.10.2017
  */
-public class BoubleSortUp extends Sort {
-
-    private Integer[] listOfElements;
-
+public class BoubleSortUp extends BoubleSort {
+    /**
+     * Iterates from beginning of the array to the last element.
+     *
+     * @param storage the array to be iterated.
+     * @return iterator which will go through array.
+     */
     @Override
-    public long sortList(Integer[] listOfElements) {
-        this.listOfElements = listOfElements;
-        long start = System.nanoTime();
-        for (int i = 0; i < listOfElements.length-1; i++) {
-            for (int j = 0; j < listOfElements.length-1; j++) {
-                if (listOfElements[j] > listOfElements[j+1]) {
-                    listOfElements = swapElements(listOfElements, j, j+1);
-                }
+    protected BoubleIterator iterator(Integer[] storage) {
+        return new BoubleIterator(storage, 0) {
+            @Override
+            public boolean hasNext() {
+                return count<storage.length-1;
             }
-        }
-        long end = System.nanoTime();
-        return (end-start);
-    }
 
-    public Integer[] sortListForTest(Integer[] listOfElements) {
-        this.listOfElements = listOfElements;
-        for (int i = 0; i < listOfElements.length-1; i++) {
-            for (int j = 0; j < listOfElements.length-1; j++) {
-                if (listOfElements[j] > listOfElements[j+1]) {
-                    listOfElements = swapElements(listOfElements, j, j+1);
-                }
+            @Override
+            public Integer next() {
+                return storage[count++];
             }
-        }
-        return listOfElements;
+        };
     }
 }
